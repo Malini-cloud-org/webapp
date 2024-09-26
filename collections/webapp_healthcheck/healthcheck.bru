@@ -1,0 +1,19 @@
+meta {
+  name: healthcheck
+  type: http
+  seq: 1
+}
+
+patch {
+  url: http://localhost:3000/healthz/
+  body: none
+  auth: none
+}
+
+body:json {
+  {"test":"data"}
+}
+
+body:text {
+  we
+}
