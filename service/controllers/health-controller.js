@@ -18,6 +18,13 @@ export const checkDatabaseConnection = async(req, res)=>{
       return responseHandler.setError(new Error('Payload not allowed'),res, 400); // Return  400 Bad Request 
   }
 
+  const contentType = req.headers['content-type'];
+  if (contentType) {
+    // Handle content type check
+    // if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+        return responseHandler.setError(new Error('Payload not allowed'), res, 400);
+    //}
+}
   try{
     await healthService.checkDatabaseConnection();
     responseHandler.setResponse(res);//HTTP 200 OK
