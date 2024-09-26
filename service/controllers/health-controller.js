@@ -13,18 +13,19 @@ export const checkDatabaseConnection = async(req, res)=>{
         return responseHandler.setError(new Error('Request parameters not allowed'), res, 400); // Return 400 Bad Request
   }
 
-  // Checking for payload in the request body
-  if (Object.keys(req.body).length > 0) {
-      return responseHandler.setError(new Error('Payload not allowed'),res, 400); // Return  400 Bad Request 
-  }
-
   const contentType = req.headers['content-type'];
   if (contentType) {
     // Handle content type check
-    // if (contentType.includes('application/json') || contentType.includes('text/plain')) {
         return responseHandler.setError(new Error('Payload not allowed'), res, 400);
-    //}
+    next();
 }
+
+  // Checking for payload in the request body
+  if (req.body && Object.keys(req.body).length > 0) {
+      return responseHandler.setError(new Error('Payload not allowed'),res, 400); // Return  400 Bad Request 
+  }
+
+
   try{
     await healthService.checkDatabaseConnection();
     responseHandler.setResponse(res);//HTTP 200 OK
