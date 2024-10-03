@@ -11,8 +11,6 @@ router.head('/self', (req, res) => {
     
 });
 
-
-
 router.post('/', userController.createUserController);
 router.get("/self", userAuth, userController.getSelfUserController );
 router.put("/self", userAuth, userController.updateSelfUserController);
@@ -25,6 +23,11 @@ router.all('/', (req, res) => {
 // Middleware to handle unsupported methods
 router.all('/self', (req, res) => {
     return responseHandler.setError(new Error('Method Not Allowed.'),res,405);
+});
+
+// Middleware to handle  invalid endpoints
+router.use((req, res) => {
+    return responseHandler.setError(new Error('Invalid request'), res, 404);
 });
 
 export default router;
