@@ -4,8 +4,8 @@ import moment from 'moment';
 // Function to format user dates
 const formatDates = (user) => {
     if (user) {
-        user.account_created = moment(user.account_created).format('MMMM Do YYYY, h:mm:ss a');
-        user.account_updated = moment(user.account_updated).format('MMMM Do YYYY, h:mm:ss a');
+        user.account_created = moment(user.account_created).subtract(4, 'hours');
+        user.account_updated = moment(user.account_updated).subtract(4, 'hours');
     }
     return user;
 };
@@ -35,7 +35,7 @@ export const getUserByEmail = async(email)=>{
                 exclude: ['password'],
             },
         });
-
+       // return user? user.toJSON() :null;
         return formatDates(user ? user.toJSON() : null);   
     } catch(error){
         console.error('Error occurred while fetching user:', error);
@@ -67,6 +67,7 @@ export const createUser = async(payload) => {
         const userResponse = newUser.toJSON();
         delete userResponse.password;
 
+        //return userResponse;
         return formatDates(userResponse);
     } catch(error){
 
