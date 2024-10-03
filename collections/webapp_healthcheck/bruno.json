@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "webapp_healthcheck",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}

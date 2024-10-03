@@ -1,6 +1,10 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
+import fs from 'fs';
+import path from 'path';
+import {fileURLToPath} from 'url';
+
 //To load environment variables
 dotenv.config();
 
