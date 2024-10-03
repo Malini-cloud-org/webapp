@@ -28,7 +28,7 @@ export const checkDatabaseConnection = async(req, res)=>{
 
   try{
     await healthService.checkDatabaseConnection();
-    responseHandler.setResponse(res);//HTTP 200 OK
+    responseHandler.setResponse(res,200);//HTTP 200 OK
   } 
   catch(error){
     console.error('Database connection error:', error);
