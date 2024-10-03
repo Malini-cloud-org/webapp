@@ -1,8 +1,8 @@
-# webapp - Health Check 
+# webapp - Health Check and User API
 
 ## Overview
 
-This project implements a health check RESTful API for a cloud-native web application. The API monitors the health of the application instance, checking the database connection and ensuring that the application is running smoothly. It follows cloud-native application requirements and RESTful API standards.
+This project implements a RESTful API for a cloud-native web application, focusing on health checks and user management. The API monitors the health of the application instance by checking the database connection and ensuring that the application is running smoothly. Additionally, it provides endpoints for user account creation, updating user information, and retrieving user details.
 
 ## Prerequisites
 
@@ -19,6 +19,7 @@ This project implements a health check RESTful API for a cloud-native web applic
 1. Clone the repository:
 
    git clone `git@github.com:Malini-cloud-org/webapp.git`
+
    cd webapp/service
 
 2. Install dependencies
@@ -27,17 +28,15 @@ This project implements a health check RESTful API for a cloud-native web applic
 
 3. Create a .env file in the service directory and add the following variables:
 
+  ```plaintext
     DB_USERNAME=database_username
-
     DB_PASSWORD=database_password
-
     DB_NAME=database_name
-
     DB_HOST=database_host
-
     DB_DIALECT=postgres
-
     PORT=port_number
+
+    
 
 4. For build and deployment to start the application, use the following command from within the service directory:
 
