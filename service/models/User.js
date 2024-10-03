@@ -39,15 +39,6 @@ const User = sequelize.define('User',{
             allowNull : false,          
         },
      
-        // account_created:{
-        //     type : DataTypes.DATE,
-        //     defaultValue: DataTypes.NOW,
-        // },
-
-        // account_updated:{
-        //     type : DataTypes.DATE,
-        //     defaultValue: DataTypes.NOW,
-        // },
     },{
         //Customizing names of createdAt and updatedAt fields
         createdAt: 'account_created',
