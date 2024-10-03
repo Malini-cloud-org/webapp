@@ -13,8 +13,8 @@ export const setResponse = (response, statusCode, data = null)=>{
 export const setError = (error, response,status = 500) =>{
   console.error( error);
   response.header('Cache-Control', 'no-cache,no-store, must-revalidate');
-   // response.status(status).send(); // Error response
+  response.status(status).send(); // Error response
   // response.sendStatus(status);
-  response.status(status).end();
+  //response.status(status).end();
 
 };

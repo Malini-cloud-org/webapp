@@ -65,6 +65,7 @@ export const getSelfUserController = async (req, res) => {
 
     try{
         setNoCacheHeaders(res);
+        res.setHeader('Content-Type', 'application/json');
 
         const email = req.user.email;
         if (req.headers['content-type'] || Object.keys(req.query).length > 0) {
@@ -106,6 +107,13 @@ export const updateSelfUserController = async(req,res) =>{
         return responseHandler.setError(new Error('Invalid fields in payload. Only firstName, lastName, and password can be updated.'), res, 400);
     }
 
+    // Check if any of the required fields is missing
+    const missingFields = validFields.some(field => !Object.keys(req.body).includes(field));
+        if (missingFields) {
+            return responseHandler.setError(
+                new Error('All fields (firstName, lastName, password, email) are required. Please provide complete data.'),res,400);
+        }
+
     // Check if email in the request body is different from the logged-in user's email
     if (req.body.email && req.body.email !== email) {
             return responseHandler.setError(new Error('Cannot change email address. Please use your registered email.'), res, 400);
@@ -126,7 +134,7 @@ export const updateSelfUserController = async(req,res) =>{
         //Saving updated user information
         await user.save();
         
-        user.account_updated = moment(user.account_updated).format('MMMM Do YYYY, h:mm:ss a');
+        user.account_updated = moment(user.account_updated).subtract(4, 'hours').format('MMMM Do YYYY, h:mm:ss a');
         return responseHandler.setResponse(res, 204);
 
     } catch(error){
