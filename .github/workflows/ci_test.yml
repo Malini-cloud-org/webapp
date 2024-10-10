@@ -59,6 +59,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
           PORT: ${{ secrets.PORT }}
+          DIALECT: ${{secrets.DIALECT}}
         run: |
           cd service
           npm test
