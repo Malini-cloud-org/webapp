@@ -24,7 +24,9 @@ jobs:
  
       # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd service  # Change to the service directory
+          npm install
  
       # Step 4: Install PostgreSQL
       - name: Install PostgreSQL
@@ -57,4 +59,6 @@ jobs:
           TEST_DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
           TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
           TEST_DB_PORT: ${{ secrets.TEST_DB_PORT }}
-        run: npm test
+        run: |
+          cd service
+          npm test
