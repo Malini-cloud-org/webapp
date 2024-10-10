@@ -24,7 +24,9 @@ jobs:
  
       # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd service  # Change to the service directory
+          npm install
  
       # Step 4: Install PostgreSQL
       - name: Install PostgreSQL
@@ -36,25 +38,28 @@ jobs:
       - name: Set up PostgreSQL
         run: |
           sudo service postgresql start
-          if [[ -z "${{ secrets.TEST_DB_USER }}" || -z "${{ secrets.TEST_DB_PASSWORD }}" ]]; then
+          if [[ -z "${{ secrets.DB_USERNAME }}" || -z "${{ secrets.DB_PASSWORD }}" ]]; then
           echo "DB_USER or DB_PASSWORD secret is not set."
           exit 1
           fi
-          if sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.TEST_DB_USER }}';" | grep -q 1; then
+          if sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.DB_USERNAME }}';" | grep -q 1; then
           echo "User exists, altering password..."
-          sudo -u postgres psql -c "ALTER USER ${{ secrets.TEST_DB_USER }} WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
           else
           echo "User does not exist, creating user..."
-          sudo -u postgres psql -c "CREATE USER ${{ secrets.TEST_DB_USER }} WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
+          sudo -u postgres psql -c "CREATE USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
           fi
-          sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.TEST_DB_NAME }}';" | grep -q 1 || sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.TEST_DB_NAME }} OWNER ${{ secrets.TEST_DB_USER }};"
+          sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.DB_NAME }}';" | grep -q 1 || sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DB_NAME }} OWNER ${{ secrets.DB_USERNAME }};"
  
         # Step 6: Run the tests
       - name: Run tests
         env:
-          TEST_DB_HOST: ${{ secrets.TEST_DB_HOST }}
-          TEST_DB_USER: ${{ secrets.TEST_DB_USER }}
-          TEST_DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-          TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
-          TEST_DB_PORT: ${{ secrets.TEST_DB_PORT }}
-        run: npm test
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          PORT: ${{ secrets.PORT }}
+          DB_DIALECT: ${{secrets.DB_DIALECT}}
+        run: |
+          cd service
+          npm test

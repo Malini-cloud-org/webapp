@@ -3,6 +3,7 @@
 ## Overview
 
 This project implements a RESTful API for a cloud-native web application, focusing on health checks and user management. The API monitors the health of the application instance by checking the database connection and ensuring that the application is running smoothly. Additionally, it provides endpoints for user account creation, updating user information, and retrieving user details.
+Also implements github workflow for running application tests.
 
 ## Prerequisites
 
