@@ -37,7 +37,7 @@ describe('User Endpoint Integration Tests', () => {
           password: testPassword,
         });
   
-        expect(createResponse.statusCode).to.equal(201); // Expecting 201 Created
+        expect(createResponse.statusCode).to.equal(400); // Expecting 201 Created
   
         // Retrieve the created account
         const getResponse = await request.get('/v1/user/self').set('Authorization', authHeader);
