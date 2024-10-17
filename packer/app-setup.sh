@@ -2,6 +2,8 @@
 set -e  # Exit on any error 
 set -x  # Print commands for debugging 
 
+sudo mkdir -p /opt/webapp
+sudo chown -R csye6225:csye6225 /opt/webapp
 # Create the group if it doesn't already exist
 if ! getent group csye6225 > /dev/null 2>&1; then
   sudo groupadd csye6225
@@ -25,10 +27,10 @@ sudo cp /tmp/csye6225-aws.service  /etc/systemd/system/
 # sudo cp /tmp/webapp.zip /opt/
 # sudo unzip /opt/webapp.zip -d /opt/webapp
 
-sudo unzip /tmp/webapp.zip -d /opt/
+sudo unzip /tmp/webapp.zip -d /opt/webapp/
 ls -R /opt/webapp/
 
-sudo chown -R csye6225:csye6225 /opt/webapp
+
 
 # Navigate to the service directory and set environment variables
 if [ -d "/opt/webapp/service" ]; then
