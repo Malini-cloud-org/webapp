@@ -44,7 +44,14 @@ jobs:
       - name: Create Zip of Webapp Repo
         run: |
           cd packer
-          zip -r webapp.zip .
+          zip -r webapp.zip ../webapp/*
+          
+      - name: Install Unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
+
+      - name: List Contents of Zip File
+        run: |
+          unzip -l packer/webapp.zip  # List contents without extracting
 
       - name: Initialize Packer Plugins
         run: |
