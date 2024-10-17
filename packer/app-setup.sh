@@ -24,13 +24,21 @@ fi
 sudo chown -R csye6225:csye6225 /opt/webapp
 sudo cp /tmp/csye6225-aws.service  /etc/systemd/system/
 
+# Ensure webapp.zip exists and copy it to /opt
+if [ -f "/tmp/webapp.zip" ]; then
+  sudo cp /tmp/webapp.zip /opt/
+else
+  echo "Error: /tmp/webapp.zip not found!"
+  exit 1
+fi
 # sudo cp /tmp/webapp.zip /opt/
 # sudo unzip /opt/webapp.zip -d /opt/webapp
-
-sudo unzip /tmp/webapp.zip -d /opt/webapp/
+# sudo cp tmp/webapp.zip /opt/
+sudo unzip /opt/webapp.zip -d /opt/webapp
+# sudo unzip /tmp/webapp.zip -d /opt/webapp/
 echo "Unzipped structure:"
 ls -R /opt/webapp/
-
+# cd /opt/webapp/service
 
 
 # Navigate to the service directory and set environment variables
