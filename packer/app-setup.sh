@@ -34,10 +34,9 @@ fi
 # sudo cp /tmp/webapp.zip /opt/
 # sudo unzip /opt/webapp.zip -d /opt/webapp
 # sudo cp tmp/webapp.zip /opt/
-sudo unzip /opt/webapp.zip -d /opt/webapp
+sudo unzip /opt/webapp.zip -d /opt/
 # sudo unzip /tmp/webapp.zip -d /opt/webapp/
-echo "Unzipped structure:"
-ls -R /opt/webapp/
+cd /opt/webapp/
 # cd /opt/webapp/service
 
 

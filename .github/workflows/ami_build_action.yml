@@ -44,7 +44,7 @@ jobs:
       - name: Create Zip of Webapp Repo
         run: |
           cd packer
-          zip -r webapp.zip ../webapp
+          zip -r webapp.zip .
 
       - name: Initialize Packer Plugins
         run: |
