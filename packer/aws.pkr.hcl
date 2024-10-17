@@ -64,10 +64,16 @@ variable "dialect" {
   default = "postgres"
 }
 
+variable "demo_account_id" {
+  type    = string
+  default = "273354658804"
+}
+
 //Source block for ami
 source "amazon-ebs" "my-ami" {
   ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-", timestamp())}"
   ami_description = "AMI for CSYE 6225 webapp - Assignment 4"
+  ami_users       = [var.demo_account_id]
 
   region        = "${var.aws_region}"
   instance_type = "${var.instance_type}"

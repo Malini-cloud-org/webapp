@@ -1,6 +1,6 @@
 #!/bin/bash
-set -e  # Exit on any error
-set -x  # Print commands for debugging
+set -e  # Exit on any error 
+set -x  # Print commands for debugging 
 
 # Create the group if it doesn't already exist
 if ! getent group csye6225 > /dev/null 2>&1; then
