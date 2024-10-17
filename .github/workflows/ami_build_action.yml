@@ -43,9 +43,11 @@ jobs:
 
       - name: Create Zip of Webapp Repo
         run: |
-          cd packer
-          zip -r webapp.zip ../webapp/*
-          
+          zip -r webapp.zip .
+
+      - name: Move Zip to Workflows Directory
+        run: mv webapp.zip packer/
+
       - name: Install Unzip
         run: sudo apt-get update && sudo apt-get install -y unzip
 
