@@ -43,11 +43,11 @@ ls -R /opt/webapp/
 
 # Navigate to the service directory and set environment variables
 if [ -d "/opt/webapp/service" ]; then
-  cd /opt/webapp/service || exit
-elif [ -d "/opt/webapp/webapp/service" ]; then
-  cd /opt/webapp/webapp/service || exit
+  cd /opt/webapp/service || exit 1
+elif [ -d "$(find /opt/webapp -type d -name 'service' -print -quit)" ]; then
+  cd "$(find /opt/webapp -type d -name 'service' -print -quit)" || exit 1
 else
-  echo "Directory /opt/webapp/service not found!"
+  echo "Service directory not found within /opt/webapp!"
   exit 1
 fi
 # cd /opt/webapp/service  || exit
