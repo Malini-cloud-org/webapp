@@ -1,0 +1,70 @@
+name: Packer AMI Build
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main 
+
+jobs:
+  if_pull_request_merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    env:
+      # DEMO_ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_DIALECT: ${{ secrets.DB_DIALECT }}
+      PORT: ${{ secrets.PORT }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@v2
+        with:
+          packer_version: latest
+
+      - name: Ensure Shell Scripts Are Executable
+        run: |
+          find ./packer -name "*.sh" -exec chmod +x {} \;
+
+      - name: Create Zip of Webapp Repo
+        run: |
+          cd packer
+          zip -r webapp.zip .
+
+      - name: Initialize Packer Plugins
+        run: |
+          cd packer
+          packer init aws.pkr.hcl
+
+      - name: Build AMI with Packer
+        run: |
+          cd packer
+          packer build aws.pkr.hcl
+
+      - name: Get AMI ID from Packer Build Output
+        id: get-ami-id
+        run: |
+          cd packer
+          AMI_ID=$(packer build -machine-readable aws.pkr.hcl | grep 'artifact,0,id' | cut -d ',' -f6 | cut -d ':' -f2)
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+
+      - name: Display AMI ID
+        run: echo "AMI ID is:${{ env.AMI_ID }}"
+
+      # - name: Share AMI with Demo Account
+      #   run: |
+      #     aws ec2 modify-image-attribute --image-id ${{ env.AMI_ID }} --attribute launchPermission --operation-type add --user-ids ${{ secrets.DEMO_ACCOUNT_ID }}
