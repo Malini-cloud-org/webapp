@@ -28,6 +28,7 @@ sudo cp /tmp/csye6225-aws.service  /etc/systemd/system/
 # sudo unzip /opt/webapp.zip -d /opt/webapp
 
 sudo unzip /tmp/webapp.zip -d /opt/webapp/
+echo "Unzipped structure:"
 ls -R /opt/webapp/
 
 
@@ -35,6 +36,8 @@ ls -R /opt/webapp/
 # Navigate to the service directory and set environment variables
 if [ -d "/opt/webapp/service" ]; then
   cd /opt/webapp/service || exit
+elif [ -d "/opt/webapp/webapp/service" ]; then
+  cd /opt/webapp/webapp/service || exit
 else
   echo "Directory /opt/webapp/service not found!"
   exit 1
