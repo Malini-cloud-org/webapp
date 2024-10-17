@@ -67,7 +67,7 @@ variable "dialect" {
 
 //Source block for ami
 source "amazon-ebs" "my-ami" {
-  //   ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-", timestamp())}"
+  ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-", timestamp())}"
   ami_description = "AMI for CSYE 6225 webapp - Assignment 4"
 
   region        = "${var.aws_region}"
