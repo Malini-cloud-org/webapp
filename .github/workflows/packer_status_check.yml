@@ -1,0 +1,41 @@
+name: Packer Status Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  packer-validate:
+    runs-on: ubuntu-latest
+    env:
+      PORT: ${{ secrets.PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      HOST: ${{ secrets.DB_HOST}}
+      DIALECT: ${{secrets.DB_DIALECT}}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@v2
+        with:
+          packer_version: latest
+
+      - name: Format Packer template
+        run: |
+          cd packer/
+          packer fmt -check -diff aws.pkr.hcl # Check formatting inside the `packer` folder
+
+      - name: Validate Packer template
+        run: |
+          cd packer/
+          packer validate aws.pkr.hcl  # Validates correctness of template
+
+
