@@ -27,6 +27,11 @@ jobs:
         uses: hashicorp/setup-packer@v2
         with:
           packer_version: latest
+          
+      - name: Initialize Packer Plugins
+        run: |
+          cd packer/
+          packer init aws.pkr.hcl
 
       - name: Format Packer template
         run: |
