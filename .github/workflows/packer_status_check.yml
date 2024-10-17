@@ -27,7 +27,14 @@ jobs:
         uses: hashicorp/setup-packer@v2
         with:
           packer_version: latest
-          
+
+      - name: Create Zip File of Webapp Repo
+        run: |
+          zip -r webapp.zip .
+
+      - name: Move Zip to Workflows Directory
+        run: mv webapp.zip packer/    
+        
       - name: Initialize Packer Plugins
         run: |
           cd packer/

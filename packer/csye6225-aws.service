@@ -1,0 +1,19 @@
+[Unit]
+Description=CSYE 6225 Cloud App
+ConditionPathExists=/opt/webapp
+After=network.target
+
+[Service]
+Type=simple
+User=csye6225
+Group=csye6225
+WorkingDirectory=/opt/webapp/service
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=csye6225
+
+[Install]
+WantedBy=multi-user.target
