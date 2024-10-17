@@ -3,7 +3,7 @@ set -e  # Exit on any error
 set -x  # Print commands for debugging 
 
 sudo mkdir -p /opt/webapp
-sudo chown -R csye6225:csye6225 /opt/webapp
+
 # Create the group if it doesn't already exist
 if ! getent group csye6225 > /dev/null 2>&1; then
   sudo groupadd csye6225
@@ -21,7 +21,7 @@ else
 fi
 # sudo groupadd csye6225
 # sudo adduser csye6225 --shell /usr/sbin/nologin -g csye6225
-
+sudo chown -R csye6225:csye6225 /opt/webapp
 sudo cp /tmp/csye6225-aws.service  /etc/systemd/system/
 
 # sudo cp /tmp/webapp.zip /opt/
