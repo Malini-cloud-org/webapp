@@ -117,3 +117,5 @@ Also implements github workflow for running application tests.
 - **Response**:
   - **HTTP 200 OK**: If the user information is successfully retrieved.
   - **Response Payload**: Returns all fields for the user except for the password.
+
+Making changes - test1
