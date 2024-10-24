@@ -77,11 +77,9 @@ source "amazon-ebs" "my-ami" {
 
   region        = "${var.aws_region}"
   instance_type = "${var.instance_type}"
-  // source_ami = "${var.source_ami}"
-  ssh_username = "${var.ssh_username}"
-  subnet_id    = "${var.subnet_id}"
-  ssh_timeout  = "10m"
-  //vpc_id = ${var.vpc_id}
+  ssh_username  = "${var.ssh_username}"
+  subnet_id     = "${var.subnet_id}"
+  ssh_timeout   = "10m"
 
   source_ami_filter {
     filters = {
@@ -116,12 +114,6 @@ build {
 
   //Shell Provisioner
   provisioner "shell" {
-    // environment_vars = [
-    //   "DB_USERNAME=${var.db_username}",
-    //   "DB_PASSWORD=${var.db_password}",
-    //   "DB_NAME=${var.db_name}"
-    // ]
-
     script = "setup-script.sh"
   }
 
@@ -139,11 +131,7 @@ build {
   //Shell provisioner to set up the application
   provisioner "shell" {
     environment_vars = [
-      // "DB_NAME=${var.db_name}",
-      // "DB_USERNAME=${var.db_username}",
-      // "DB_PASSWORD=${var.db_password}",
       "PORT= ${var.port}",
-      // "DB_HOST=${var.host}",
       "DB_DIALECT=${var.dialect}"
     ]
     script = "app-setup.sh"
