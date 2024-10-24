@@ -1,6 +1,6 @@
 [Unit]
 Description=CSYE 6225 Cloud App
-ConditionPathExists=/opt/webapp
+ConditionPathExists=/opt/webapp/service/.env
 After=network.target
 
 [Service]
@@ -11,8 +11,8 @@ WorkingDirectory=/opt/webapp/service
 ExecStart=/usr/bin/node /opt/webapp/service/server.js
 Restart=always
 RestartSec=3
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=csye6225
 
 [Install]

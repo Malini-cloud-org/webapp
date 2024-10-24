@@ -3,25 +3,26 @@ set -e  # Exit on any error
 set -x  # Print commands for debugging 
 
 sudo mkdir -p /opt/webapp
-
+sudo groupadd -f csye6225
+sudo useradd -r -g csye6225 -s /usr/sbin/nologin csye6225
+sudo chown -R csye6225:csye6225 /opt/webapp
 # Create the group if it doesn't already exist
-if ! getent group csye6225 > /dev/null 2>&1; then
-  sudo groupadd csye6225
-  echo "Group csye6225 created."
-else
-  echo "Group csye6225 already exists."
-fi
+# if ! getent group csye6225 > /dev/null 2>&1; then
+#   sudo groupadd csye6225
+#   echo "Group csye6225 created."
+# else
+#   echo "Group csye6225 already exists."
+# fi
 
 # Create the user if it doesn't already exist
-if ! id -u csye6225 > /dev/null 2>&1; then
-  sudo useradd -r -g csye6225 -s /usr/sbin/nologin csye6225
-  echo "User csye6225 created."
-else
-  echo "User csye6225 already exists."
-fi
-# sudo groupadd csye6225
-# sudo adduser csye6225 --shell /usr/sbin/nologin -g csye6225
-sudo chown -R csye6225:csye6225 /opt/webapp
+# if ! id -u csye6225 > /dev/null 2>&1; then
+#   sudo useradd -r -g csye6225 -s /usr/sbin/nologin csye6225
+#   echo "User csye6225 created."
+# else
+#   echo "User csye6225 already exists."
+# fi
+
+# sudo chown -R csye6225:csye6225 /opt/webapp
 sudo cp /tmp/csye6225-aws.service  /etc/systemd/system/
 
 # Ensure webapp.zip exists and copy it to /opt
@@ -36,27 +37,24 @@ fi
 # sudo cp tmp/webapp.zip /opt/
 sudo unzip /opt/webapp.zip -d /opt/webapp
 # sudo unzip /tmp/webapp.zip -d /opt/webapp/
-cd /opt/webapp/
+cd /opt/webapp/service || exit 1
 # cd /opt/webapp/service
 
 
 # Navigate to the service directory and set environment variables
-if [ -d "/opt/webapp/service" ]; then
-  cd /opt/webapp/service || exit 1
-elif [ -d "$(find /opt/webapp -type d -name 'service' -print -quit)" ]; then
-  cd "$(find /opt/webapp -type d -name 'service' -print -quit)" || exit 1
-else
-  echo "Service directory not found within /opt/webapp!"
-  exit 1
-fi
+# if [ -d "/opt/webapp/service" ]; then
+#   cd /opt/webapp/service || exit 1
+# elif [ -d "$(find /opt/webapp -type d -name 'service' -print -quit)" ]; then
+#   cd "$(find /opt/webapp -type d -name 'service' -print -quit)" || exit 1
+# else
+#   echo "Service directory not found within /opt/webapp!"
+#   exit 1
+# fi
 # cd /opt/webapp/service  || exit
 
+#Not reqd
 env_values=$(cat <<END
 PORT=$PORT
-DB_NAME=$DB_NAME
-DB_USERNAME=$DB_USERNAME
-DB_PASSWORD=$DB_PASSWORD
-DB_HOST=$DB_HOST
 DB_DIALECT=$DB_DIALECT
 END
 )
@@ -65,11 +63,16 @@ echo "$env_values" | sudo tee .env >/dev/null
 sudo chown csye6225:csye6225 .env 
 
 echo ".env file created"
+#Not reqd
+echo "PORT is: $PORT"
+echo "DB_DIALECT is: $DB_DIALECT"
 
+#Install npm dependencies
 sudo npm install 
 
 echo "NPM packages installed successfully."
 
-
+#Reload SystemD and enable the service
 sudo systemctl daemon-reload
 sudo systemctl enable csye6225-aws.service
+sudo systemctl start csye6225-aws.service

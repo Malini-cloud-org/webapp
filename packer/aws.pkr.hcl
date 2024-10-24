@@ -71,7 +71,7 @@ variable "demo_account_id" {
 
 //Source block for ami
 source "amazon-ebs" "my-ami" {
-  ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-", timestamp())}"
+  ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-HH_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225 webapp - Assignment 4"
   ami_users       = [var.demo_account_id]
 
@@ -116,11 +116,11 @@ build {
 
   //Shell Provisioner
   provisioner "shell" {
-    environment_vars = [
-      "DB_USERNAME=${var.db_username}",
-      "DB_PASSWORD=${var.db_password}",
-      "DB_NAME=${var.db_name}"
-    ]
+    // environment_vars = [
+    //   "DB_USERNAME=${var.db_username}",
+    //   "DB_PASSWORD=${var.db_password}",
+    //   "DB_NAME=${var.db_name}"
+    // ]
 
     script = "setup-script.sh"
   }
@@ -139,11 +139,11 @@ build {
   //Shell provisioner to set up the application
   provisioner "shell" {
     environment_vars = [
-      "DB_NAME=${var.db_name}",
-      "DB_USERNAME=${var.db_username}",
-      "DB_PASSWORD=${var.db_password}",
+      // "DB_NAME=${var.db_name}",
+      // "DB_USERNAME=${var.db_username}",
+      // "DB_PASSWORD=${var.db_password}",
       "PORT= ${var.port}",
-      "DB_HOST=${var.host}",
+      // "DB_HOST=${var.host}",
       "DB_DIALECT=${var.dialect}"
     ]
     script = "app-setup.sh"

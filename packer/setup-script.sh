@@ -18,18 +18,19 @@ sudo apt-get install -y nodejs npm
 sudo node -v
 sudo npm -v
 
-# Install PostgreSQL
-sudo apt-get install -y postgresql postgresql-contrib
+#Not required anymore
+# # Install PostgreSQL
+# sudo apt-get install -y postgresql postgresql-contrib
 
-# Enable and start PostgreSQL service
-sudo systemctl daemon-reload
-sudo systemctl enable postgresql
-sudo systemctl start postgresql
+# # Enable and start PostgreSQL service
+# sudo systemctl daemon-reload
+# sudo systemctl enable postgresql
+# sudo systemctl start postgresql
 
-# Configure PostgreSQL: create user and database using environment variables
-sudo -u postgres psql <<EOF
-CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
-CREATE DATABASE $DB_NAME;
-GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USERNAME;
-ALTER DATABASE $DB_NAME OWNER TO $DB_USERNAME;
-EOF
+# # Configure PostgreSQL: create user and database using environment variables
+# sudo -u postgres psql <<EOF
+# CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';
+# CREATE DATABASE $DB_NAME;
+# GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USERNAME;
+# ALTER DATABASE $DB_NAME OWNER TO $DB_USERNAME;
+# EOF
