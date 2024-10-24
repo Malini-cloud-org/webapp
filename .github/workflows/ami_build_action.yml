@@ -70,11 +70,6 @@ jobs:
         run: |
           cd packer
           AMI_ID=$(packer build -machine-readable aws.pkr.hcl | grep 'artifact,0,id' | cut -d ',' -f6 | cut -d ':' -f2)
-          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+          echo "AMI_ID=$AMI_ID" 
 
-      - name: Display AMI ID
-        run: echo "AMI ID is:${{ env.AMI_ID }}"
-
-      # - name: Share AMI with Demo Account
-      #   run: |
-      #     aws ec2 modify-image-attribute --image-id ${{ env.AMI_ID }} --attribute launchPermission --operation-type add --user-ids ${{ secrets.DEMO_ACCOUNT_ID }}
+      
