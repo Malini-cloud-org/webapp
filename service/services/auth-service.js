@@ -1,7 +1,8 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import * as responseHandler from '../controllers/response-handler.js';
-
+import logger from '../lib/logger.js';
+import statsd  from '../lib/statsd.js';
 
 //Middleware for authentication
 const userAuth = async (req, res, next) =>{
@@ -10,6 +11,7 @@ const userAuth = async (req, res, next) =>{
 
         //Checking if Authorization header is present
         if(!authHeader){
+            logger.error('Authorization header is missing');
             return responseHandler.setError(new Error('Not authenticated'), res, 401);
 
         }
@@ -17,7 +19,8 @@ const userAuth = async (req, res, next) =>{
         const [authType, authToken] = authHeader.split(' ');
            
         if (authType !== 'Basic' || !authToken) {
-                return responseHandler.setError(new Error('Invalid authorization format'), res, 401);
+            logger.error('Invalid authorization format');
+            return responseHandler.setError(new Error('Invalid authorization format'), res, 401);
         }
 
         //Decoding credentials from the authorization header
@@ -30,13 +33,16 @@ const userAuth = async (req, res, next) =>{
 
          // Validate that both email and password are present
         if (!email || !password) {
-                    return responseHandler.setError(new Error('Email and password are required for authentication'), res, 400);
+            logger.error('Email and password are required for authentication'); 
+            return responseHandler.setError(new Error('Email and password are required for authentication'), res, 400);
         }
-        
+        const startTime = Date.now();
         //Finding user by email/username
         const user = await User.findOne({where : {email}});
+        statsd.timing('db.user_auth.query_time', Date.now() - startTime);
 
         if(!user){
+            logger.error("Username doesn't exist: " + email);
             return responseHandler.setError(new Error("Username doesn't exist"), res, 400);
 
         }
@@ -45,11 +51,13 @@ const userAuth = async (req, res, next) =>{
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
+            logger.error('Wrong username or password for user: ' + email);
             return responseHandler.setError(new Error('Wrong username or password!'), res, 401);
         }
 
         //Successful authentication
         req.user= user;
+        logger.info('User authenticated successfully: ' + email);
         next();
 
     }catch(error){
