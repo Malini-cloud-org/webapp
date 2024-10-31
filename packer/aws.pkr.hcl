@@ -69,6 +69,11 @@ variable "demo_account_id" {
   default = "273354658804"
 }
 
+variable "environment" {
+  type    = string
+  default = "dev"
+}
+
 //Source block for ami
 source "amazon-ebs" "my-ami" {
   ami_name        = "CSYE6225_AMI_webapp_${formatdate("YYYY_MM_DD-HH_mm_ss", timestamp())}"
@@ -128,6 +133,12 @@ build {
     destination = "/tmp/csye6225-aws.service"
   }
 
+  // File provisioner to copy CloudWatch config
+  provisioner "file" {
+    source      = "cloudwatch-config.json"
+    destination = "/tmp/cloudwatch-config.json"
+  }
+
   //Shell provisioner to set up the application
   provisioner "shell" {
     environment_vars = [
@@ -135,5 +146,10 @@ build {
       "DB_DIALECT=${var.dialect}"
     ]
     script = "app-setup.sh"
+  }
+
+  // Shell provisioner to run CloudWatch Agent setup
+  provisioner "shell" {
+    script = "cloudwatch-setup.sh" // Call the CloudWatch setup script
   }
 }

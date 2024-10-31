@@ -33,11 +33,14 @@ echo ".env file created"
 
 echo "PORT is: $PORT"
 echo "DB_DIALECT is: $DB_DIALECT"
+# echo "NODE_ENV is: $NODE_ENV"
 
 #Install npm dependencies
 sudo npm install 
 
 echo "NPM packages installed successfully."
+sudo chown csye6225:csye6225 node_modules
+
 
 #Reload SystemD and enable the service
 sudo systemctl daemon-reload

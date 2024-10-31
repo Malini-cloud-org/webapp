@@ -65,11 +65,11 @@ jobs:
           cd packer
           packer build aws.pkr.hcl
 
-      - name: Get AMI ID from Packer Build Output
-        id: get-ami-id
-        run: |
-          cd packer
-          AMI_ID=$(packer build -machine-readable aws.pkr.hcl | grep 'artifact,0,id' | cut -d ',' -f6 | cut -d ':' -f2)
-          echo "AMI_ID=$AMI_ID" 
+      # - name: Get AMI ID from Packer Build Output
+      #   id: get-ami-id
+      #   run: |
+      #     cd packer
+      #     AMI_ID=$(packer build -machine-readable aws.pkr.hcl | grep 'artifact,0,id' | cut -d ',' -f6 | cut -d ':' -f2)
+      #     echo "AMI_ID=$AMI_ID" 
 
       
