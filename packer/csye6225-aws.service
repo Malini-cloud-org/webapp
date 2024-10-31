@@ -11,8 +11,8 @@ WorkingDirectory=/opt/webapp/service
 ExecStart=/usr/bin/node /opt/webapp/service/server.js
 Restart=always
 RestartSec=3
-StandardOutput=journal
-StandardError=journal
+StandardOutput=append: /opt/webapp/logs/csye6225webapp.log
+StandardError=append: /opt/webapp/logs/csye6225webapp.log
 SyslogIdentifier=csye6225
 
 [Install]
