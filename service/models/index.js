@@ -18,20 +18,14 @@ export const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERN
 User.hasOne(Image, { foreignKey: 'user_id' });
 Image.belongsTo(User, { foreignKey: 'user_id' });
 
-// // Sync models in the correct order
-// async function syncModels() {
-//   await User.sync(); // Create User table first
-//   await Image.sync(); // Create Image table with foreign key to User
-// }
-
-// syncModels()
-//   .then(() => console.log('Tables synced successfully.'))
-//   .catch((error) => console.error('Error syncing tables:', error));
-
-sequelize.sync()
-    .then(() => {
-        console.log('All tables created successfully.');
-    })
-    .catch((error) => {
-        console.error('Error creating tables:', error);
-    });
+// Sync models in the correct order
+export async function syncModels() {
+    try {
+        await User.sync(); // First sync User table
+        console.log('User table created successfully.');
+        await Image.sync(); // Then sync Image table with FK dependency on User
+        console.log('Image table created successfully.');
+      } catch (error) {
+        console.error('Error syncing tables:', error);
+      }
+}

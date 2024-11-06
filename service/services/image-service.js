@@ -1,10 +1,10 @@
 
 
 import AWS from 'aws-sdk';
-import { v4 as uuidv4 } from 'uuid';
 import Image from '../models/Image.js';
 import logger from '../lib/logger.js';
 import statsd from '../lib/statsd.js';
+
 
 // Initialize S3 client
 const s3 = new AWS.S3();
@@ -13,7 +13,6 @@ export const uploadImageService = async (file, userId) => {
     
     try {
         const fileExtension = file.mimetype.split('/')[1];
-        const uniqueId = uuidv4();
         const fileKey = `user-${userId}-${file.originalname}`;
 
         const params = {
@@ -51,12 +50,8 @@ export const getImageService = async (userId) => {
     const startTime = Date.now();
     try {
         const image = await Image.findOne({ where: { user_id: userId } });
-        if (!image) {
-            logger.error("Error retrieving profile image:", error);
-            return null;
-        }
-        logger.info(`Profile image retrieved for user ID ${userId}`);
         return image;
+
     } catch (error) {
         logger.error("Error retrieving profile image:", error);
         throw new Error("Failed to retrieve image.");

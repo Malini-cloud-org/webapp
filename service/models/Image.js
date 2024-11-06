@@ -1,6 +1,7 @@
 // models/Image.js
 import  {Sequelize, DataTypes } from 'sequelize';
 import  {sequelize}  from '../services/health-service.js';
+import User from './User.js';
 
 const Image = sequelize.define('Image', {
     id: {
@@ -40,15 +41,24 @@ const Image = sequelize.define('Image', {
     timestamps: false,
 });
 
+// User.sync()
+//     .then(() => Image.sync())
+//     .then(() => {
+//         console.log('Image table created successfully.');
+//     })
+//     .catch((error) => {
+//         console.error('Error creating Image table:', error);
+//     });
+
+    // Image.sync()
+    // .then(() => {
+    //     console.log('Image table created successfully.');
+    // })
+    // .catch((error) => {
+    //     console.error('Error creating Image table:', error);
+    // });
 
 
-// Sync the Image model to create the table
-Image.sync()
-    .then(() => {
-        console.log('Image table created successfully.');
-    })
-    .catch((error) => {
-        console.error('Error creating Image table:', error);
-    });
+
 
 export default Image;
