@@ -6,6 +6,7 @@ const initialize =(app)=>{
 
     app.use(express.json());
     initializeRoutes(app); // Initilaize routes
+
   
 }
 export default initialize;

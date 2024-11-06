@@ -65,13 +65,5 @@ const User = sequelize.define('User',{
       };
       
 
-      User.sync()
-        .then(()=>{
-            console.log(' User table created succesfully. ');
-        })
-        .catch((error)=> {
-            console.error(User===sequelize.models.User);
-        });
-
  export default User;
      

@@ -109,19 +109,22 @@ export const getUserProfileImage = async (req, res) => {
             return responseHandler.setError(new Error("User not found"), res, 404);
         }
 
+
         // Find the user's image
         const userId = user.uuid;
         const image = await imageService.getImageService(user.uuid);
+
+        if (!image) {
+            logger.error(`No profile image found for user ID: ${userId}`);
+            return responseHandler.setError(new Error("Profile image not found"), res, 404);
+        }
 
         // Extract file name and extension
         const [baseName, extension] = image.file_name.match(/^(.*?)(\.[^.]*$|$)/).slice(1);
         const shortenedBaseName = baseName.length > 8 ? `${baseName.slice(0, 8)}...` : baseName;
         const shortenedFileName = `${shortenedBaseName}${extension}`;
 
-        if (!image) {
-            logger.error(`No profile image found for user ID: ${userId}`);
-            return responseHandler.setError(new Error("Profile image not found"), res, 404);
-        }
+
 
         // Response payload
         const response = {

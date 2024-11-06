@@ -5,12 +5,17 @@ import initialize from '.././app.js';
 import { Buffer } from 'buffer';
 import express from 'express';
 
+import User from '../models/User.js';
+
+import  {sequelize, checkDatabaseConnection}  from '../services/health-service.js';
+
 dotenv.config();
+
 const createTestApp = () => {
-    const app = express(); // Create a new Express application instance
-    app.use(express.json()); // Use JSON middleware
-    initialize(app); // Initialize routes with the app instance
-    return app; // Return the app instance
+  const app = express(); // Create a new Express application instance
+  app.use(express.json()); // Use JSON middleware
+  initialize(app); // Initialize routes with the app instance
+  return app; // Return the app instance
 };
 
 const request = supertest(createTestApp()); 
@@ -20,6 +25,15 @@ function encodeBasicAuth(email, password) {
 }
 
 describe('User Endpoint Integration Tests', () => {
+  before(async () => {
+    await checkDatabaseConnection();
+  });
+ 
+  after(async () => {
+    await User.destroy({ where: {} });
+    await sequelize.close();
+  });
+
     const testUsername = 'integrationtest.user@example.com';
     const testPassword = 'testPassword';
     const newTestPassword = 'qwertyiou';
@@ -92,6 +106,8 @@ describe('User Endpoint Integration Tests', () => {
       });
     
 
-
+after(() => {
+    process.exit(0);
+  });
 
 });

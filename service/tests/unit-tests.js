@@ -4,8 +4,13 @@ import supertest from 'supertest';
 import initialize from '.././app.js';
 import { Buffer } from 'buffer';
 import express from 'express';
+import User from '../models/User.js';
+
+import  {sequelize, checkDatabaseConnection}  from '../services/health-service.js';
+
 
 dotenv.config();
+
 const createTestApp = () => {
     const app = express(); // Create a new Express application instance
     app.use(express.json()); // Use JSON middleware
@@ -20,6 +25,16 @@ function encodeBasicAuth(email, password) {
 }
 
 describe('User Endpoint Unit Tests', () => {
+
+    before(async () => {
+        await checkDatabaseConnection();
+      });
+     
+      after(async () => {
+        await User.destroy({ where: {} });
+        await sequelize.close();
+      });
+
     const testEmail = `testuser54321@example.com`;
     const testPassword = 'testpassword';
     const newTestPassword = 'qwertyiou';
@@ -218,6 +233,10 @@ it('Unit Test 21 - Successful user update - 204', async () => {
 
     expect(response.statusCode).to.equal(204); // Expecting No Content
 });
+
+after(() => {
+    process.exit(0);
+  });
 
 
 
