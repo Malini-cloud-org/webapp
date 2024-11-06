@@ -23,4 +23,6 @@ syncModels()
     logger.error('Server startup failed due to database sync error:', error);
   });
 
-
+  // app.listen(port, () => {
+  //   logger.info(`Server is running on port ${port}`);
+  // });

@@ -18,6 +18,7 @@ export const checkDatabaseConnection = async()=>{
   try{
     // Using sequelize's authenticate method to check the connection
     await sequelize.authenticate();
+    // await sequelize.sync();
     statsd.timing('db.health_check.query_time', Date.now() - startTime); 
     logger.info('Database connected successfully'); 
   }

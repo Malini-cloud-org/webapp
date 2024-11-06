@@ -4,35 +4,37 @@ import supertest from 'supertest';
 import initialize from '.././app.js';
 import { Buffer } from 'buffer';
 import express from 'express';
-import { syncModels } from '../models/index.js';
+import User from '../models/User.js';
+
+import  {sequelize, checkDatabaseConnection}  from '../services/health-service.js';
+
 
 dotenv.config();
-let request;
-const createTestApp = async() => {
+
+const createTestApp = () => {
     const app = express(); // Create a new Express application instance
     app.use(express.json()); // Use JSON middleware
     initialize(app); // Initialize routes with the app instance
-
-    try {
-        await syncModels(true); // Force sync models before tests
-        console.log('Test database synced successfully.');
-    } catch (error) {
-        console.error('Failed to sync test database:', error);
-        process.exit(1); // Exit on failure to prevent false positives
-    }
     return app; // Return the app instance
 };
 
-before(async () => {
-  const app = await createTestApp(); // Await the async function
-  request = supertest(app); // Pass the resolved app to supertest
-});
+const request = supertest(createTestApp()); 
 
 function encodeBasicAuth(email, password) {
     return 'Basic ' + Buffer.from(`${email}:${password}`).toString('base64');
 }
 
 describe('User Endpoint Unit Tests', () => {
+
+    before(async () => {
+        await checkDatabaseConnection();
+      });
+     
+      after(async () => {
+        await User.destroy({ where: {} });
+        await sequelize.close();
+      });
+
     const testEmail = `testuser54321@example.com`;
     const testPassword = 'testpassword';
     const newTestPassword = 'qwertyiou';
@@ -231,6 +233,10 @@ it('Unit Test 21 - Successful user update - 204', async () => {
 
     expect(response.statusCode).to.equal(204); // Expecting No Content
 });
+
+after(() => {
+    process.exit(0);
+  });
 
 
 
