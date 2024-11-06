@@ -5,15 +5,29 @@ import initialize from '.././app.js';
 import { Buffer } from 'buffer';
 import express from 'express';
 
+import { syncModels } from '../models/index.js';
+
 dotenv.config();
-const createTestApp = () => {
+let request;
+const createTestApp = async() => {
     const app = express(); // Create a new Express application instance
     app.use(express.json()); // Use JSON middleware
     initialize(app); // Initialize routes with the app instance
+
+    try {
+        await syncModels(true); // Force sync models before tests
+        console.log('Test database synced successfully.');
+    } catch (error) {
+        console.error('Failed to sync test database:', error);
+        process.exit(1); // Exit on failure to prevent false positives
+    }
     return app; // Return the app instance
 };
 
-const request = supertest(createTestApp()); 
+before(async () => {
+  const app = await createTestApp(); // Await the async function
+  request = supertest(app); // Pass the resolved app to supertest
+});
 
 function encodeBasicAuth(email, password) {
     return 'Basic ' + Buffer.from(`${email}:${password}`).toString('base64');

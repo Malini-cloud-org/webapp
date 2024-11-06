@@ -41,24 +41,4 @@ const Image = sequelize.define('Image', {
     timestamps: false,
 });
 
-// User.sync()
-//     .then(() => Image.sync())
-//     .then(() => {
-//         console.log('Image table created successfully.');
-//     })
-//     .catch((error) => {
-//         console.error('Error creating Image table:', error);
-//     });
-
-    // Image.sync()
-    // .then(() => {
-    //     console.log('Image table created successfully.');
-    // })
-    // .catch((error) => {
-    //     console.error('Error creating Image table:', error);
-    // });
-
-
-
-
 export default Image;
