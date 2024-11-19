@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import moment from 'moment';
 import logger from '../lib/logger.js';
 import statsd  from '../lib/statsd.js';
+import { UUIDV4 } from 'sequelize';
 
 // Function to format user dates
 const formatDates = (user) => {
@@ -41,7 +42,8 @@ export const getUserByEmail = async(email)=>{
                 email,
             },
             attributes: {
-                exclude: ['password'],
+                exclude: ['password'] ,
+                // exclude: ['password', 'verification_token', 'verification_link', 'is_verified','token_expiration' ] ,
             },
         });
         statsd.timing('db.get_user.query_time', Date.now() - startTime);
@@ -62,7 +64,7 @@ export const getUserByEmailForUpdate = async (email) => {
     try {
         const user = await User.findOne({
             where: { email },
-            attributes: { exclude: ['password'] },
+            attributes: { exclude: ['password']},
         });
         statsd.timing('db.get_user_for_update.query_time', Date.now() - startTime);
         logger.info('User fetched for update: ' + email);
@@ -86,7 +88,7 @@ export const createUser = async(payload) => {
             attributes: ['UUID', 'Email', 'firstName', 'lastName', 'account_created', 'account_updated'],
         });
         statsd.timing('db.create_user.query_time', Date.now() - startTime);
-        const userResponse = newUser.toJSON();
+        const userResponse = newUser;
         delete userResponse.password;
 
         logger.info('User created successfully: ' + JSON.stringify(userResponse));
