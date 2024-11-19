@@ -81,6 +81,7 @@ export const createUserController = async(req, res)=>{
             newUser.token_expiration = expirationTime;
             await newUser.save();
 
+            if (process.env.NODE_ENV !== 'test') {
             // Publish a message to the SNS topic
             const snsMessage = {
                 first_name: newUser.firstName,
@@ -107,9 +108,9 @@ export const createUserController = async(req, res)=>{
             } catch (snsError) {
                 logger.error('Error publishing SNS message:', snsError);
             }
-
+      
             logger.info('SNS message published successfully.');
-            // Send the response excluding the password
+           }   // Send the response excluding the password
             const userResponse = { ...newUser.toJSON() }; 
             delete userResponse.password; 
             delete userResponse.verification_token;
