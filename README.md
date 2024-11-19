@@ -93,6 +93,7 @@ Also implements github workflow for running application tests.
   - `account_updated` is also set to the current time upon successful creation.
   - Passwords are stored securely using the BCrypt hashing scheme with salt.
 
+
 #### Update User Information
 
 - **Endpoint**: `v1/user/self`
@@ -118,4 +119,4 @@ Also implements github workflow for running application tests.
   - **HTTP 200 OK**: If the user information is successfully retrieved.
   - **Response Payload**: Returns all fields for the user except for the password.
 
-Making changes - test1
+
