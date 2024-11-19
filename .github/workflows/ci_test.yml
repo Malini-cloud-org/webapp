@@ -59,6 +59,7 @@ jobs:
         # Step 6: Run the tests
       - name: Run tests
         env:
+          NODE_ENV: test
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -67,4 +68,7 @@ jobs:
           DB_DIALECT: ${{secrets.DB_DIALECT}}
         run: |
           cd service
-          npm test
+          # Run unit tests
+          npm run test:unit
+          # Run integration tests
+          npm run test:integration

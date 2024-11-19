@@ -38,6 +38,23 @@ const User = sequelize.define('User',{
             type: DataTypes.STRING,
             allowNull : false,          
         },
+
+        verification_token: {
+            type: DataTypes.STRING, // Store the verification token here
+            allowNull: true
+        },
+        token_expiration: {
+            type: DataTypes.DATE, // Store the token expiration time here
+            allowNull: true
+        },
+        verification_link: {  // New column for the verification link
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        is_verified: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,  // By default, the user is not verified
+        }
      
     },{
         //Customizing names of createdAt and updatedAt fields
