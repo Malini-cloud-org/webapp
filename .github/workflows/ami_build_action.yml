@@ -8,12 +8,12 @@ on:
       - main 
 
 jobs:
-  if_pull_request_merge:
+  build_and_share_ami:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     env:
-      # DEMO_ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
+      DEMO_ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -32,6 +32,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{secrets.AWS_REGION}}
+
       - name: Install Packer
         uses: hashicorp/setup-packer@v2
         with:
@@ -65,11 +66,85 @@ jobs:
           cd packer
           packer build aws.pkr.hcl
 
-      # - name: Get AMI ID from Packer Build Output
-      #   id: get-ami-id
-      #   run: |
-      #     cd packer
-      #     AMI_ID=$(packer build -machine-readable aws.pkr.hcl | grep 'artifact,0,id' | cut -d ',' -f6 | cut -d ':' -f2)
-      #     echo "AMI_ID=$AMI_ID" 
+      - name: Share AMI with DEMO Account
+        id: share_ami
+        run: |
+          AMI_ID=$(aws ec2 describe-images --owners self --query "Images | sort_by(@, &CreationDate)[-1].ImageId" --output text)
+          if [ -n "$AMI_ID" ]; then
+            aws ec2 modify-image-attribute --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"UserId\": \"${{ env.DEMO_ACCOUNT_ID }}\"}]}"
+            echo "::set-output name=ami_id::$AMI_ID"
+          else
+            echo "AMI not found."
+            exit 1
+          fi
 
-      
+      - name: Save AMI_ID as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ami_id
+          path: ami_id.txt
+
+  update_launch_template:
+    needs: build_and_share_ami
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DEPLOY_ENVIRONMENT: ${{ secrets.DEPLOY_ENVIRONMENT }}
+      AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
+      LAUNCH_TEMPLATE_ID: ${{ secrets.LAUNCH_TEMPLATE_ID }} 
+  
+    steps:
+        - name: Configure AWS Credentials for Dev
+          if: ${{ env.DEPLOY_ENVIRONMENT == 'DEV' }}
+          uses: aws-actions/configure-aws-credentials@v4.0.2
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+  
+        - name: Configure AWS Credentials for Prod
+          if: ${{ env.DEPLOY_ENVIRONMENT == 'DEMO' }}
+          uses: aws-actions/configure-aws-credentials@@v4.0.2
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}
+            aws-region: ${{ env.AWS_REGION }}
+
+ 
+        - name: Create New Launch Template Version
+          run: |
+            AMI_ID="${{ needs.build_and_share_ami.outputs.ami_id }}"
+            echo "Creating new Launch Template version with AMI ID: $AMI_ID"
+            aws ec2 create-launch-template-version \
+                --launch-template-id ${{ env.LAUNCH_TEMPLATE_ID }} \
+                --source-version 1 \
+                --launch-template-data "{\"ImageId\":\"$AMI_ID\"}"
+
+        - name: Start Instance Refresh
+          id: start_refresh
+          run: |
+            REFRESH_ID=$(aws autoscaling start-instance-refresh \
+                --auto-scaling-group-name ${{ env.AUTO_SCALING_GROUP_NAME }} \
+                --query "InstanceRefreshId" \
+                --output text)
+            echo "Instance Refresh started with ID: $REFRESH_ID"
+            echo "instance_refresh_id=$REFRESH_ID" >> $GITHUB_ENV
+
+        - name: Wait for Instance Refresh Completion
+          run: |
+            echo "Waiting for instance refresh to complete..."
+            while true; do
+              STATUS=$(aws autoscaling describe-instance-refreshes \
+                  --auto-scaling-group-name ${{ env.AUTO_SCALING_GROUP_NAME }} \
+                  --query "InstanceRefreshes[?InstanceRefreshId=='${{ env.instance_refresh_id }}'].Status" \
+                  --output text)
+              echo "Current status: $STATUS"
+              if [[ "$STATUS" == "Successful" ]]; then
+                echo "Instance Refresh completed successfully."
+                break
+              elif [[ "$STATUS" == "Failed" || "$STATUS" == "Cancelled" ]]; then
+                echo "Instance Refresh failed or was cancelled. Exiting."
+                exit 1
+              fi
+              sleep 30
+            done
