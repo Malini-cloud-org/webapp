@@ -17,10 +17,10 @@ router.head('/self/pic', (req, res) => {
     
 });
 
-// router.head('/verify', (req, res) => {
-//     return responseHandler.setError(new Error('Method Not Allowed.'),res,405);
+router.head('/verify', (req, res) => {
+    return responseHandler.setError(new Error('Method Not Allowed.'),res,405);
     
-// });
+});
 
 router.post('/', userController.createUserController);
 router.get("/self", userAuth, userController.getSelfUserController );
@@ -51,9 +51,9 @@ router.all('/self/pic', (req, res) => {
 
 
 // Middleware to handle unsupported methods
-// router.all('/verify', (req, res) => {
-//     return responseHandler.setError(new Error('Method Not Allowed.'),res,405);
-// });
+router.all('/verify', (req, res) => {
+    return responseHandler.setError(new Error('Method Not Allowed.'),res,405);
+});
 
 // Middleware to handle  invalid endpoints
 router.use((req, res) => {
